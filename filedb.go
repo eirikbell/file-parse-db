@@ -1,5 +1,4 @@
-package main
-//package fileparsedb
+package fileparsedb
 
 import (
 	"strconv"
@@ -12,31 +11,31 @@ import (
 	"io/ioutil"
 )
 
-func main() {
+// func main() {
 
-	db_path := "db/parsed_files.db"
+// 	db_path := "db/parsed_files.db"
 
-	fdb := NewFileDb(db_path, "data/conviva", strings.Compare)
+// 	fdb := NewFileDb(db_path, "data/conviva", strings.Compare)
 
-	file, err := fdb.GetNextFile()
+// 	file, err := fdb.GetNextFile()
 
-	if err != nil {
-		log.Fatal(err)
-	}
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
 
-	if len(file) <= 0 {
-		log.Info("NONE LEFT")
-		return
-	}
+// 	if len(file) <= 0 {
+// 		log.Info("NONE LEFT")
+// 		return
+// 	}
 
-	log.Info("NEXT", file)
+// 	log.Info("NEXT", file)
 
-	err = fdb.MarkParsed(file)
+// 	err = fdb.MarkParsed(file)
 	
-	if err != nil {
-		log.Fatal(err)
-	}
-}
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// }
 
 type FileDB struct {
 	dbPath string
