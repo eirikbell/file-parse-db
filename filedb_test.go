@@ -96,5 +96,5 @@ func sortAsInt(s1, s2 string) int {
 	if _, err := strconv.ParseInt(s2, 10, 32); err == nil {
 		return 1
 	}
-	return 0
+	return strings.Compare(s1, s2)
 }
