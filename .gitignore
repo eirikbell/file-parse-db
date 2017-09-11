@@ -1,0 +1,9 @@
+.idea/**/*
+.gradle/**/*
+.vscode/**/*
+**/.vscode/**/*
+data/**/*
+dist/**/*
+data
+db
+bin
