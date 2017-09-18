@@ -4,39 +4,13 @@ import (
 	"strconv"
 	"strings"
 	"sort"
-	"fmt"
 	"time"
 	log "github.com/Sirupsen/logrus"
 	"github.com/boltdb/bolt"
 	"io/ioutil"
 )
 
-// func main() {
-
-// 	db_path := "db/parsed_files.db"
-
-// 	fdb := NewFileDb(db_path, "data/conviva", strings.Compare)
-
-// 	file, err := fdb.GetNextFile()
-
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	if len(file) <= 0 {
-// 		log.Info("NONE LEFT")
-// 		return
-// 	}
-
-// 	log.Info("NEXT", file)
-
-// 	err = fdb.MarkParsed(file)
-	
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// }
-
+// FileDB contains configuration
 type FileDB struct {
 	dbPath string
 	fileBucket string
@@ -44,6 +18,7 @@ type FileDB struct {
 	fileNameComparer func(string, string) int
 }
 
+// NewFileDb Create a new fileDb with config
 func NewFileDb(dbPath, fileDir string, fileNameComparer func(string, string) int) *FileDB {
 	fdb := FileDB{dbPath: dbPath, fileBucket: "syncFiles", fileDir: fileDir, fileNameComparer: fileNameComparer}
 
@@ -62,6 +37,7 @@ func NewFileDb(dbPath, fileDir string, fileNameComparer func(string, string) int
 	return &fdb
 }
 
+// GetNextFile Get next file to parse, filtering previously parsed files and ordered by comparator
 func (fdb *FileDB) GetNextFile() (string, error) {
 	fileList, err := fdb.listFiles()
 	if err != nil {
@@ -85,6 +61,7 @@ func (fdb *FileDB) GetNextFile() (string, error) {
 	return fdb.sortFiles(filesToProcess)[0], nil
 }
 
+// MarkParsed Mark file as parsed
 func (fdb *FileDB) MarkParsed(file string) error {
 	return fdb.storeFile(file, true)
 }
@@ -106,7 +83,6 @@ func (fdb *FileDB) getNonProcessedFiles() ([]string, error) {
 		c := b.Cursor()
 	
 		for k, v := c.First(); k != nil; k, v = c.Next() {
-			fmt.Printf("key=%s, value=%s\n", k, v)
 			strVal := string(v[:])
 			value, err := strconv.ParseBool(strVal)
 			if err != nil {
@@ -157,7 +133,6 @@ func (fdb *FileDB) storeFile(file string, value bool) error {
 	strVal := strconv.FormatBool(value)
 
 	err = db.Update(func(tx *bolt.Tx) error {
-		fmt.Println("store file", file, value)
 		b := tx.Bucket([]byte(fdb.fileBucket))
 		err := b.Put([]byte(file), []byte(strVal))
 		return err
@@ -178,7 +153,6 @@ func (fdb *FileDB) fileExists(file string) (bool, error) {
 	err = db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(fdb.fileBucket))
 		v := b.Get([]byte(file))
-		fmt.Printf("The answer for %s is: %s\n", file, v)
 
 		if v != nil {
 			result = true

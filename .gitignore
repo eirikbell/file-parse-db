@@ -7,3 +7,4 @@ dist/**/*
 data
 db
 bin
+*.db
