@@ -109,13 +109,15 @@ func (fdb *FileDB) ensureFilesInDb(fileList []string) error {
 	}
 
 	for _, file := range fileList {
-		exists, err := fdb.fileExists(file)
-		if err != nil {
-			return err
-		}
+		if file != ".sincedb" {
+			exists, err := fdb.fileExists(file)
+			if err != nil {
+				return err
+			}
 
-		if !exists {
-			fdb.storeFile(file, false)
+			if !exists {
+				fdb.storeFile(file, false)
+			}
 		}
 	}
 
