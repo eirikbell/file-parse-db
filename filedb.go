@@ -15,12 +15,13 @@ type FileDB struct {
 	dbPath string
 	fileBucket string
 	fileDir string
+	fileNamePrefix string
 	fileNameComparer func(string, string) int
 }
 
 // NewFileDb Create a new fileDb with config
-func NewFileDb(dbPath, fileDir string, fileNameComparer func(string, string) int) *FileDB {
-	fdb := FileDB{dbPath: dbPath, fileBucket: "syncFiles", fileDir: fileDir, fileNameComparer: fileNameComparer}
+func NewFileDb(dbPath, fileDir, fileNamePrefix string, fileNameComparer func(string, string) int) *FileDB {
+	fdb := FileDB{dbPath: dbPath, fileBucket: "syncFiles", fileDir: fileDir, fileNamePrefix: fileNamePrefix, fileNameComparer: fileNameComparer}
 
 	db, err := fdb.openDb()
 	if err != nil {
@@ -109,15 +110,13 @@ func (fdb *FileDB) ensureFilesInDb(fileList []string) error {
 	}
 
 	for _, file := range fileList {
-		if file != ".sincedb" {
-			exists, err := fdb.fileExists(file)
-			if err != nil {
-				return err
-			}
+		exists, err := fdb.fileExists(file)
+		if err != nil {
+			return err
+		}
 
-			if !exists {
-				fdb.storeFile(file, false)
-			}
+		if !exists {
+			fdb.storeFile(file, false)
 		}
 	}
 
@@ -173,7 +172,7 @@ func (fdb *FileDB) listFiles() ([]string, error) {
 
 	fileList := []string{}
 	for _, file := range dirContent {
-		if !file.IsDir() {
+		if !file.IsDir() && strings.HasPrefix(file.Name(), fdb.fileNamePrefix) {
 			fileList = append(fileList, file.Name())
 		}
 	}

@@ -15,7 +15,7 @@ func TestCreateFileDB(t *testing.T) {
 	t.Run("Test values stored on object", func(t *testing.T){
 		dbPath := "test.db"
 		fileDir := "data/conviva"
-		fileDb := NewFileDb(dbPath, fileDir, sortAsInt)
+		fileDb := NewFileDb(dbPath, fileDir, "", sortAsInt)
 		assert.Equal(dbPath, fileDb.dbPath)
 		assert.Equal(fileDir, fileDb.fileDir)
 		assert.Equal(reflect.ValueOf(sortAsInt), reflect.ValueOf(fileDb.fileNameComparer))
@@ -26,7 +26,7 @@ func TestSortFiles(t *testing.T) {
 	assert := assert.New(t)
 
 	files := []string{"1", "2", "11", "9", "20", "3", "test", "1pa"}
-	fdb := NewFileDb("test.db", "data/test", strings.Compare)
+	fdb := NewFileDb("test.db", "data/test", "", strings.Compare)
 
 	t.Run("Default sort by name", func(t *testing.T){
 		fdb.fileNameComparer = nil
