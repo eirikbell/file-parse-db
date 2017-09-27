@@ -4,7 +4,7 @@ Wrapper library for BoltDB to synchroneously process files in a given order
 # Usage
 ```
 // db will be created if it doesnt exist from before
-fdb := NewFileDb("/some/dir/dbname.db", "/folder/containing/files", "", strings.Compare)
+fdb := NewFileDb("/some/dir/dbname.db", "/folder/containing/files", "", "", strings.Compare)
 
 // Gets the next non processed file
 fileName, err := fdb.GetNextFile()
@@ -28,9 +28,9 @@ if err != nil {
 
 ```
 
-# Require file prefix
+# Require file prefix and suffix
 ```
-fdb := NewFileDb("/some/dir/dbname.db", "/folder/containing/files", "fileNamePrefix", strings.Compare)
+fdb := NewFileDb("/some/dir/dbname.db", "/folder/containing/files", "fileNamePrefix", "fileNameSuffix", strings.Compare)
 ...
 
 ```
@@ -55,6 +55,6 @@ func sortAsInt(s1, s2 string) int {
 	return strings.Compare(s1, s2)
 }
 
-fdb := NewFileDb("/some/dir/dbname.db", "/folder/containing/files", "", sortAsInt)
+fdb := NewFileDb("/some/dir/dbname.db", "/folder/containing/files", "", "", sortAsInt)
 
 ```

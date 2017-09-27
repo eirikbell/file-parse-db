@@ -1,27 +1,28 @@
 package fileparsedb
 
 import (
-	"strconv"
-	"strings"
-	"sort"
-	"time"
 	log "github.com/Sirupsen/logrus"
 	"github.com/boltdb/bolt"
 	"io/ioutil"
+	"sort"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // FileDB contains configuration
 type FileDB struct {
-	dbPath string
-	fileBucket string
-	fileDir string
-	fileNamePrefix string
+	dbPath           string
+	fileBucket       string
+	fileDir          string
+	fileNamePrefix   string
+	fileNameSuffix   string
 	fileNameComparer func(string, string) int
 }
 
 // NewFileDb Create a new fileDb with config
-func NewFileDb(dbPath, fileDir, fileNamePrefix string, fileNameComparer func(string, string) int) *FileDB {
-	fdb := FileDB{dbPath: dbPath, fileBucket: "syncFiles", fileDir: fileDir, fileNamePrefix: fileNamePrefix, fileNameComparer: fileNameComparer}
+func NewFileDb(dbPath, fileDir, fileNamePrefix, fileNameSuffix string, fileNameComparer func(string, string) int) *FileDB {
+	fdb := FileDB{dbPath: dbPath, fileBucket: "syncFiles", fileDir: fileDir, fileNamePrefix: fileNamePrefix, fileNameSuffix: fileNameSuffix, fileNameComparer: fileNameComparer}
 
 	db, err := fdb.openDb()
 	if err != nil {
@@ -80,9 +81,9 @@ func (fdb *FileDB) getNonProcessedFiles() ([]string, error) {
 	err = db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket([]byte(fdb.fileBucket))
-	
+
 		c := b.Cursor()
-	
+
 		for k, v := c.First(); k != nil; k, v = c.Next() {
 			strVal := string(v[:])
 			value, err := strconv.ParseBool(strVal)
@@ -94,7 +95,7 @@ func (fdb *FileDB) getNonProcessedFiles() ([]string, error) {
 				result = append(result, string(k[:]))
 			}
 		}
-	
+
 		return nil
 	})
 	if err != nil {
@@ -172,7 +173,7 @@ func (fdb *FileDB) listFiles() ([]string, error) {
 
 	fileList := []string{}
 	for _, file := range dirContent {
-		if !file.IsDir() && strings.HasPrefix(file.Name(), fdb.fileNamePrefix) {
+		if !file.IsDir() && strings.HasPrefix(file.Name(), fdb.fileNamePrefix) && strings.HasSuffix(file.Name(), fdb.fileNameSuffix) {
 			fileList = append(fileList, file.Name())
 		}
 	}
@@ -187,7 +188,7 @@ func (fdb *FileDB) sortFiles(files []string) []string {
 		comparer = strings.Compare
 	}
 
-	sort.Slice(files, func(i, j int) bool { return comparer(files[i], files[j]) < 0})
+	sort.Slice(files, func(i, j int) bool { return comparer(files[i], files[j]) < 0 })
 
 	return files
 }
