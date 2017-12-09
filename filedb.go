@@ -1,14 +1,18 @@
 package fileparsedb
 
 import (
-	log "github.com/Sirupsen/logrus"
-	"github.com/boltdb/bolt"
 	"io/ioutil"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/boltdb/bolt"
+	log "github.com/sirupsen/logrus"
 )
+
+// VERSION of the lib
+const VERSION = "0.0.2"
 
 // FileDB contains configuration
 type FileDB struct {
