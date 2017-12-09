@@ -12,7 +12,7 @@ import (
 )
 
 // VERSION of the lib
-const VERSION = "0.0.1"
+const VERSION = "0.0.2"
 
 // FileDB contains configuration
 type FileDB struct {
