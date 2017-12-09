@@ -1,3 +1,5 @@
+# Requires bump_version from github.com/Shyp/bump_version  
+
 bump:
 	bump_version patch filedb.go 
 
